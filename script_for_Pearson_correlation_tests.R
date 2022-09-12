@@ -14,51 +14,41 @@ library(gridExtra)
 library(readxl)
 
 
-# Load files of interest
-d.location="both_means.txt"
-both_means=read.table(d.location,header=TRUE)
 
-d.location="both_triplicates.txt"
-both_triplicates=read.table(d.location,header=TRUE)
+#### Compute Pearson correlation test for growth rate in monoculture vs carrying capacity in bi-culture (Fig. 4a) ####
 
-d.location="cultures_means.txt"
-cultures_means=read.table(d.location,header=TRUE)
-
-d.location="cultures_triplicates.txt"
-cultures_triplicates=read.table(d.location,header=TRUE)
+# Load data
+mu_K_co <- read_excel("data_for_Pearson.xlsx", sheet="co_cultures")
 
 
-
-## Pearson correlation test including colors + shapes + error bars
-
-
-
-## mu mono vs K bi and quadri (= co) ##
-
-mu_K_co <- read_excel("both_means.xlsx", sheet="co")
-
-plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",
-                          add = "reg.line", conf.int = TRUE, cor.coef.size = 5,
-                          cor.coef = TRUE, cor.method = "pearson", cor.coef.coord=c(0.25,25), 
-                          color="strain", shape="culture", size=4,
+# Compute Pearson correlation test including colors + shapes + error bars
+plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",                    
+                          add = "reg.line", conf.int = TRUE, cor.coef.size = 5, # correlation line + interaction coef
+                          cor.coef = TRUE, cor.method = "pearson", cor.coef.coord=c(0.25,25), # test = Pearson
+                          color="strain", shape="culture", size=4,    # color by strain and shape by type of culture
                           palette=c("darkorange2","gray47","green3","purple4"),
                           add.params=list(color="black", fill="lightgray", shape=18), 
-                          xlim=c(0.2,0.67), ylim=c(12,26),
+                          xlim=c(0.2,0.67), ylim=c(12,26),    # add limits for x and y axes
                           xlab = expression(bold(paste("growth rate in monoculture (", h^-1, ")",sep=""))),
                           ylab = "carrying capacity in co-culture [ln(cells/mL)]") +
   geom_point(fill=c("darkorange2","gray47","green3","purple4", "darkorange2","gray47","green3","purple4",
                     "darkorange2","gray47","green3","purple4", "darkorange2","gray47","green3","purple4"), alpha=5) +
+  
+  # choose shapes to be displayed
   scale_shape_manual(
-    #name="shape", 
-    values = c(5, 7, 25, 15, 16, 17, 11)) +
-  geom_errorbar(aes(x=mu.mono, y=lnK.co, ymin=lnK.co-sdK, ymax=lnK.co+sdK), 
-                width=0.0025, colour="cornflowerblue", alpha=0.7, size=0.5) +
+    values = c(5, 7, 25, 15, 16, 17, 11)) +   
+  
+  # set vertical error bars
+  geom_errorbar(aes(x=mu.mono, y=lnK.co, ymin=lnK.co-sdK, ymax=lnK.co+sdK),    
+                width=0.0025, colour="cornflowerblue", alpha=0.7, size=0.5) +  
+  
+  # set horizontal error bars
   geom_errorbarh(aes(xmin=mu.mono-sdmu, xmax=mu.mono+sdmu), colour="cornflowerblue", alpha=0.7, size=0.5) +
+  
+  # x and y axes labels + legend
   theme(
-    axis.title.x = element_text(#color="burlywood4",  
-      size=16, face="bold"),
-    axis.title.y = element_text(#color="cornflowerblue",  
-      size=16, face="bold"),
+    axis.title.x = element_text(size=16, face="bold"),
+    axis.title.y = element_text(size=16, face="bold"),
     axis.text.x = element_text(size=14),
     axis.text.y = element_text(size=14),
     legend.position = c(1,0.01),
@@ -68,17 +58,19 @@ plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",
 
 plot_mu_K_co
 
-ggsave(file="plot_mu_K_co.svg", plot=plot_mu_K_co, width=15, height=7.5)
+ggsave(file="plot_mu_K_co.png", plot=plot_mu_K_co, width=15, height=7.5)
 
 
 
 
-## mu vs K in bi, quadri and mix ##
+#### Compute Pearson correlation test for growth rate vs carrying capacity in all co-cultures + 20-sp mix (Fig. 4b) ####
 
-# with error bars
 
-co_means <- read_excel("both_means.xlsx", sheet="bi_quadri_mix")
+# Load data
+co_means <- read_excel("data_for_Pearson.xlsx", sheet="bi_quadri_mix")
 
+
+# Compute Pearson correlation test including colors + shapes + error bars
 plot_co_means <- ggscatter(co_means, x = "mu", y = "lnK",
                            add = "reg.line", conf.int = TRUE, cor.coef.size = 5,
                            cor.coef = TRUE, cor.method = "pearson", cor.coef.coord=c(0.25,25),
@@ -92,10 +84,8 @@ plot_co_means <- ggscatter(co_means, x = "mu", y = "lnK",
                 width=0.0025, colour="cornflowerblue", alpha=0.7, size=0.5) +
   geom_errorbarh(aes(xmin=mu-sdmu, xmax=mu+sdmu), colour="cornflowerblue", alpha=0.7, size=0.5) +
   theme(
-    axis.title.x = element_text(#color="burlywood4",  
-      size=16, face="bold"),
-    axis.title.y = element_text(#color="cornflowerblue",  
-      size=16, face="bold"),
+    axis.title.x = element_text(size=16, face="bold"),
+    axis.title.y = element_text(size=16, face="bold"),
     axis.text.x = element_text(size=14),
     axis.text.y = element_text(size=14),
     legend.position = c(1,0.01),
@@ -108,16 +98,14 @@ plot_co_means
 
 
 
-## arrange mu_K_co + co_means ##
+#### Arrange both graphs to create Fig. 4 ####
 
-two_graphs <- ggarrange(plot_mu_K_co, plot_co_means,
-                        #labels = c("A", "B"),
-                        #label.x=0.1,
-                        ncol = 2, nrow = 1)
+# Put both graphs on same figure
+two_graphs <- ggarrange(plot_mu_K_co, plot_co_means, ncol = 2, nrow = 1)
 two_graphs
 
+# Add a and b panels
 final_graphs <- annotate_figure(two_graphs, top = text_grob(c("a", "b"), size=20, face="bold", x=c(0.07, 0.57)))
 final_graphs
 
-ggsave(file="final_graphs_error_bars.svg", plot=final_graphs, width=15, height=7.5)
-ggsave(file="final_graphs_error_bars.png", plot=final_graphs, width=15, height=7.5)
+ggsave(file="final_graphs_Pearson.png", plot=final_graphs, width=15, height=7.5)
