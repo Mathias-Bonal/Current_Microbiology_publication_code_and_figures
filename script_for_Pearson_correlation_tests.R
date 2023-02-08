@@ -1,4 +1,13 @@
-## Pearson correlation test on growth rates vs carrying capacities values
+#### Pearson correlation test on growth rates vs carrying capacities values ####
+#
+# Create the plots of Pearson correlation tests as presented in Bonal et al, 2022
+#
+# Authors: Mathias Bonal, with revisions from Karoline Faust
+#
+# Last modified: 06/02/2023
+
+
+ 
 
 # Set of working directory
 setwd("~/R/Data/stats_mu_K")
@@ -10,6 +19,7 @@ library(Hmisc)
 library(corrplot)
 library(ggplot2)
 library(ggsci)
+library(ggsignif)
 library(gridExtra)
 library(readxl)
 
@@ -58,7 +68,7 @@ plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",
 
 plot_mu_K_co
 
-ggsave(file="plot_mu_K_co.png", plot=plot_mu_K_co, width=15, height=7.5)
+#ggsave(file="plot_mu_K_co.png", plot=plot_mu_K_co, width=15, height=7.5)
 
 
 
