@@ -6,7 +6,7 @@ The R files are scripts used to create Fig. 2, 4, 5, S1, S2 and S3.
 
 script_plots_cultures.R is the script used to create Fig. 2 and S1-2-3.
 
-int_coef_Schott_Bottles is
+int_coef_Schott_Bottles.R is the script used to calculate the interaction coefficients appearing in Table S2 among which the most significant ones appear in Fig. 3.
 
 script_for_Pearson_correlation_tests.R is the script used to create Fig. 4.
 
