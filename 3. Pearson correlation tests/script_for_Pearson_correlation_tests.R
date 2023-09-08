@@ -1,31 +1,38 @@
-#### Pearson correlation test on growth rates vs carrying capacities values ####
+# Pearson correlation test on growth rates vs carrying capacities values
 #
-# Create the plots of Pearson correlation tests as presented in Bonal et al, 2022
+# Create the plots of Pearson correlation tests as presented in Bonal et al, 2023 (Fig. 4)
 #
-# Authors: Mathias Bonal, with revisions from Karoline Faust
 #
-# Last modified: 06/02/2023
+# Authors: Mathias Bonal, with revisions from Prof. Karoline Faust
+#
+# Last modified: 08/09/2023
 
 
- 
+
+
+# Introductory steps ----
+
 
 # Set of working directory
 setwd("~/R/Data/stats_mu_K")
 
 # Load packages
+library(ggplot2)
 library(ggpubr)
+library(ggsci)
 library(tidyverse)
 library(Hmisc)
 library(corrplot)
-library(ggplot2)
-library(ggsci)
-library(ggsignif)
 library(gridExtra)
 library(readxl)
 
 
 
-#### Compute Pearson correlation test for growth rate in monoculture vs carrying capacity in bi-culture (Fig. 4a) ####
+# mu mono vs K bi ----
+
+# Compute Pearson correlation test for growth rate in monoculture vs carrying capacity 
+# in bi-culture (Fig. 4a)
+
 
 # Load data
 mu_K_co <- read_excel("data_for_Pearson.xlsx", sheet="co_cultures")
@@ -36,8 +43,8 @@ plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",
                           add = "reg.line", conf.int = TRUE, cor.coef.size = 5, # correlation line + interaction coef
                           cor.coef = TRUE, cor.method = "pearson", cor.coef.coord=c(0.25,25), # test = Pearson
                           color="strain", shape="culture", size=4,    # color by strain and shape by type of culture
-                          palette=c("darkorange2","gray47","green3","purple4"),
-                          add.params=list(color="black", fill="lightgray", shape=18), 
+                          palette=c("darkorange2","gray47","green3","purple4"), # manually set colors to differentiate the strains
+                          add.params=list(color="black", fill="lightgray", shape=18), # set diagonal and zone of confidence interval of 95%
                           xlim=c(0.2,0.67), ylim=c(12,26),    # add limits for x and y axes
                           xlab = expression(bold(paste("growth rate in monoculture (", h^-1, ")",sep=""))),
                           ylab = "carrying capacity in co-culture [ln(cells/mL)]") +
@@ -46,7 +53,7 @@ plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",
   
   # choose shapes to be displayed
   scale_shape_manual(
-    values = c(5, 7, 25, 15, 16, 17, 11)) +   
+    values = c(5, 7, 25, 15, 16, 17, 11)) +   # manually set shapes easily distinguishable
   
   # set vertical error bars
   geom_errorbar(aes(x=mu.mono, y=lnK.co, ymin=lnK.co-sdK, ymax=lnK.co+sdK),    
@@ -68,12 +75,15 @@ plot_mu_K_co <- ggscatter(mu_K_co, x = "mu.mono", y = "lnK.co",
 
 plot_mu_K_co
 
-#ggsave(file="plot_mu_K_co.png", plot=plot_mu_K_co, width=15, height=7.5)
+ggsave(file="plot_mu_K_co.png", plot=plot_mu_K_co, width=15, height=7.5)
 
 
 
 
-#### Compute Pearson correlation test for growth rate vs carrying capacity in all co-cultures + 20-sp mix (Fig. 4b) ####
+# mu all vs K all ----
+
+# Compute Pearson correlation test for growth rate vs carrying capacity in all co-cultures + 
+# 20-species mix (Fig. 4b)
 
 
 # Load data
@@ -108,14 +118,19 @@ plot_co_means
 
 
 
-#### Arrange both graphs to create Fig. 4 ####
+# Arrange plots ----
+
+# Arrange both graphs to create Fig. 4
+
 
 # Put both graphs on same figure
 two_graphs <- ggarrange(plot_mu_K_co, plot_co_means, ncol = 2, nrow = 1)
 two_graphs
 
+
 # Add a and b panels
 final_graphs <- annotate_figure(two_graphs, top = text_grob(c("a", "b"), size=20, face="bold", x=c(0.07, 0.57)))
 final_graphs
 
+# Save figure
 ggsave(file="final_graphs_Pearson.png", plot=final_graphs, width=15, height=7.5)
